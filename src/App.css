@@ -53,9 +53,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 20px;
-  margin-bottom: 40px;
+  padding: 15px 10px;
+  margin-bottom: 30px;
   position: relative;
+  border-bottom: 1px solid #eaeaea;
 }
 
 .logo {
