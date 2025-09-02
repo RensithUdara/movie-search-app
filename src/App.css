@@ -158,8 +158,9 @@ h1 {
 /* Hero Section */
 .hero-section {
   text-align: center;
-  margin: 40px auto 60px;
+  margin: 40px auto;
   max-width: 800px;
+  flex: 0 0 auto;
 }
 
 .hero-section h2 {
@@ -709,6 +710,8 @@ h1 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 30px;
+  overflow-y: auto;
+  max-height: 600px;
 }
 
 /* History chips */
