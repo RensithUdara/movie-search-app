@@ -1,15 +1,30 @@
-import React from 'react';
-import { FaHeart, FaRegHeart, FaCalendarAlt, FaFilm, FaInfoCircle } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaHeart, FaRegHeart, FaCalendarAlt, FaFilm, FaInfoCircle, FaImage } from 'react-icons/fa';
 import './MovieCard.css';
 
 function MovieCard({ movie, onSelect, onAddToFavorites, onRemoveFromFavorites, isFavorite }) {
+  const [imageError, setImageError] = useState(false);
+
+  // Handle image load errors
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className="movie-card">
       <div className="poster-container">
-        <img 
-          src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image+Available'} 
-          alt={movie.Title} 
-        />
+        {!imageError && movie.Poster && movie.Poster !== 'N/A' ? (
+          <img 
+            src={movie.Poster} 
+            alt={movie.Title}
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="fallback-poster">
+            <FaImage />
+            <p>{movie.Title}</p>
+          </div>
+        )}
         <div className="movie-overlay">
           <button className="info-button" onClick={onSelect}>
             <FaInfoCircle /> View Details
