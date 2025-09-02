@@ -75,30 +75,47 @@ function App() {
   return (
     <div className="app-frame">
       <header className="app-header">
-        <h1><FaFilm /> Movie Search App</h1>
-        <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)}>
-          {darkMode ? <FaSun /> : <FaMoon />} {darkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
-      </header>
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search for a movie..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSearch();
-            }
-          }}
-        />
-        {searchTerm && (
-          <button className="clear-search" onClick={handleClearSearch}>
-            <FaTimes />
+        <div className="logo">
+          <FaFilm className="logo-icon" />
+          <h1>MovieFlix</h1>
+        </div>
+        <div className="header-actions">
+          <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? <FaSun /> : <FaMoon />} 
+            <span className="button-text">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
-        )}
-        <button onClick={handleSearch}>
-          <FaSearch /> Search
+        </div>
+      </header>
+      
+      {!movies.length && !searchTerm.trim() && (
+        <div className="hero-section">
+          <h2>Discover Your Next Favorite Movie</h2>
+          <p>Search from thousands of titles, explore details, and build your collection</p>
+        </div>
+      )}
+      
+      <div className="search-container">
+        <div className="search-input-wrapper">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search for movies by title..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+          />
+          {searchTerm && (
+            <button className="clear-search" onClick={handleClearSearch}>
+              <FaTimes />
+            </button>
+          )}
+        </div>
+        <button className="search-button" onClick={handleSearch}>
+          <FaSearch /> <span className="button-text">Search</span>
         </button>
       </div>
 
@@ -118,68 +135,128 @@ function App() {
           ) : (
             searchTerm.trim() !== '' ? (
               <div className="no-results">
-                <p>No movies found matching "{searchTerm}"</p>
-                <p>Try a different search term</p>
+                <div className="message-icon">
+                  <FaSearch className="search-empty-icon" />
+                </div>
+                <h3>No movies found matching "{searchTerm}"</h3>
+                <p>Try different keywords or check for spelling errors</p>
+                <button className="try-again-button" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
               </div>
             ) : (
               <div className="welcome-message">
-                <p>Search for movies above to get started!</p>
+                <div className="welcome-icon">
+                  <FaFilm className="film-icon" />
+                </div>
+                <h3>Ready to explore movies?</h3>
+                <p>Start by searching for a title above</p>
               </div>
             )
           )}
         </div>
       )}
 
-      <div className="pagination">
-        <button onClick={() => handlePagination('prev')} disabled={page === 1}>
-          <FaChevronLeft /> Previous
-        </button>
-        <span>Page {page}</span>
-        <button onClick={() => handlePagination('next')}>
-          Next <FaChevronRight />
-        </button>
-      </div>
-
-      <section className="favorites-section">
-        <h2><FaHeart /> Favorites</h2>
-        <button className="clear-favorites" onClick={handleClearFavorites}>
-          <FaTrash /> Clear All Favorites
-        </button>
-        <div className="favorites-container">
-          {favorites.length > 0 ? (
-            favorites.map((movie) => (
-              <MovieCard
-                key={movie.imdbID}
-                movie={movie}
-                onSelect={() => setSelectedMovie(movie.imdbID)}
-                onRemoveFromFavorites={() => handleRemoveFromFavorites(movie.imdbID)}
-                isFavorite
-              />
-            ))
-          ) : (
-            <p>No favorites added yet. Click "Add to Favorites" on any movie card to add it here.</p>
-          )}
+      {movies.length > 0 && (
+        <div className="pagination">
+          <button 
+            className="pagination-button prev" 
+            onClick={() => handlePagination('prev')} 
+            disabled={page === 1}
+          >
+            <FaChevronLeft /> <span className="button-text">Previous</span>
+          </button>
+          <div className="page-indicator">
+            <span>Page {page}</span>
+          </div>
+          <button 
+            className="pagination-button next" 
+            onClick={() => handlePagination('next')}
+          >
+            <span className="button-text">Next</span> <FaChevronRight />
+          </button>
         </div>
-      </section>
+      )}
 
-      <section className="history-section">
-        <h2><FaHistory /> Search History</h2>
-        <div className="search-history">
-          {searchHistory.length > 0 ? (
-            searchHistory.map((term, index) => (
-              <button key={index} onClick={() => {
-                setSearchTerm(term);
-                // Need to use a timeout to ensure setSearchTerm completes first
-                setTimeout(() => handleSearch(), 0);
-              }}>
-                {term}
+      <div className="sections-container">
+        <section className="favorites-section">
+          <div className="section-header">
+            <div className="section-title">
+              <FaHeart className="section-icon heart" /> 
+              <h2>My Favorites</h2>
+            </div>
+            {favorites.length > 0 && (
+              <button className="clear-favorites" onClick={handleClearFavorites}>
+                <FaTrash /> <span className="button-text">Clear All</span>
               </button>
-            ))
-          ) : (
-            <p>Search for movies to build your history.</p>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+          
+          <div className="favorites-container">
+            {favorites.length > 0 ? (
+              favorites.map((movie) => (
+                <MovieCard
+                  key={movie.imdbID}
+                  movie={movie}
+                  onSelect={() => setSelectedMovie(movie.imdbID)}
+                  onRemoveFromFavorites={() => handleRemoveFromFavorites(movie.imdbID)}
+                  isFavorite
+                />
+              ))
+            ) : (
+              <div className="empty-section">
+                <div className="empty-icon">
+                  <FaHeart className="heart-icon" />
+                </div>
+                <h3>No favorites yet</h3>
+                <p>Add movies you love to your favorites collection</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="history-section">
+          <div className="section-header">
+            <div className="section-title">
+              <FaHistory className="section-icon history" /> 
+              <h2>Recent Searches</h2>
+            </div>
+            {searchHistory.length > 0 && (
+              <button className="clear-history" onClick={() => setSearchHistory([])}>
+                <FaTrash /> <span className="button-text">Clear</span>
+              </button>
+            )}
+          </div>
+          
+          <div className="search-history">
+            {searchHistory.length > 0 ? (
+              <div className="history-chips">
+                {searchHistory.map((term, index) => (
+                  <button 
+                    key={index} 
+                    className="history-chip"
+                    onClick={() => {
+                      setSearchTerm(term);
+                      // Need to use a timeout to ensure setSearchTerm completes first
+                      setTimeout(() => handleSearch(), 0);
+                    }}
+                  >
+                    <FaSearch className="tiny-search" /> {term}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-section">
+                <div className="empty-icon">
+                  <FaHistory className="history-icon" />
+                </div>
+                <h3>No search history</h3>
+                <p>Your recent searches will appear here</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
 
       {selectedMovie && (
         <MovieDetailsModal
