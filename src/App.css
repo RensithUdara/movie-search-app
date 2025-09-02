@@ -57,6 +57,11 @@ body {
 .dark-mode .logo-icon {
   color: #4cc9f0;
 }
+
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
   left: 0;
   width: 80px;
   height: 3px;
