@@ -64,6 +64,7 @@ h1 {
   margin: 0;
   font-weight: 700;
   background: linear-gradient(90deg, #4361ee, #7209b7);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
@@ -71,6 +72,7 @@ h1 {
 
 .dark-mode h1 {
   background: linear-gradient(90deg, #4cc9f0, #90caf9);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
