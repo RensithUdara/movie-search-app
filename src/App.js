@@ -40,20 +40,28 @@ function App() {
     if (searchTerm.trim() === '') return;
     setLoading(true);
     try {
-      const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&page=${page}&apikey=a2bc5221`);
+      // Ensure we're using https and properly encode parameters
+      const apiUrl = `https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&page=${page}&apikey=a2bc5221`;
+      console.log('Fetching movies from:', apiUrl);
+      
+      const response = await fetch(apiUrl);
       const data = await response.json();
-      if (data.Search) {
-        // Process the movies data
+      
+      if (data.Search && Array.isArray(data.Search)) {
+        // Process the movies data and log any issues with posters
         const processedMovies = data.Search.map(movie => {
           // Check if poster URL is valid (not N/A)
-          if (movie.Poster === 'N/A') {
-            console.log(`Movie with missing poster: ${movie.Title} (${movie.imdbID})`);
+          if (!movie.Poster || movie.Poster === 'N/A' || !movie.Poster.startsWith('http')) {
+            console.log(`Movie with missing or invalid poster: ${movie.Title} (${movie.imdbID})`);
+            // Ensure poster property is consistent for error handling
+            movie.Poster = 'N/A';
           }
           return movie;
         });
         
         setMovies(processedMovies);
         setSearchHistory((prev) => [...new Set([searchTerm, ...prev.slice(0, 9)])]);
+        console.log(`Found ${processedMovies.length} movies for search term: "${searchTerm}"`);
       } else {
         console.log('No movies found for search term:', searchTerm);
         setMovies([]);

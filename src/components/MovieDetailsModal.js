@@ -7,12 +7,37 @@ function MovieDetailsModal({ imdbID, onClose }) {
   const [loading, setLoading] = useState(true);
   const [posterError, setPosterError] = useState(false);
 
+  // Function to check if an image URL is valid (returns 200 OK)
+  const isImageValid = async (url) => {
+    if (!url || url === 'N/A') return false;
+    
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      return response.ok;
+    } catch (error) {
+      console.error("Error validating image:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchMovieDetails = async () => {
       setLoading(true);
       try {
         const response = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=a2bc5221&plot=full`);
         const data = await response.json();
+        
+        // Validate the poster image URL before displaying
+        if (data.Poster && data.Poster !== 'N/A') {
+          const isValid = await isImageValid(data.Poster);
+          if (!isValid) {
+            setPosterError(true);
+            console.log(`Invalid poster image for ${data.Title}: ${data.Poster}`);
+          }
+        } else {
+          setPosterError(true);
+        }
+        
         setMovieDetails(data);
       } catch (error) {
         console.error('Error fetching movie details:', error);
@@ -63,7 +88,12 @@ function MovieDetailsModal({ imdbID, onClose }) {
               <img 
                 src={movieDetails.Poster} 
                 alt={movieDetails.Title} 
-                onError={() => setPosterError(true)}
+                onError={() => {
+                  console.log(`Failed to load image: ${movieDetails.Poster}`);
+                  setPosterError(true);
+                }}
+                loading="eager"
+                crossOrigin="anonymous"
               />
             ) : (
               <div className="poster-fallback">
