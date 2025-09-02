@@ -10,7 +10,7 @@ function MovieDetailsModal({ imdbID, onClose }) {
     const fetchMovieDetails = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://www.omdbapi.com/?i=${imdbID}&apikey=a2bc5221&plot=full`);
+        const response = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=a2bc5221&plot=full`);
         const data = await response.json();
         setMovieDetails(data);
       } catch (error) {
