@@ -43,9 +43,19 @@ function App() {
       const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&page=${page}&apikey=a2bc5221`);
       const data = await response.json();
       if (data.Search) {
-        setMovies(data.Search);
+        // Process the movies data
+        const processedMovies = data.Search.map(movie => {
+          // Check if poster URL is valid (not N/A)
+          if (movie.Poster === 'N/A') {
+            console.log(`Movie with missing poster: ${movie.Title} (${movie.imdbID})`);
+          }
+          return movie;
+        });
+        
+        setMovies(processedMovies);
         setSearchHistory((prev) => [...new Set([searchTerm, ...prev.slice(0, 9)])]);
       } else {
+        console.log('No movies found for search term:', searchTerm);
         setMovies([]);
       }
     } catch (error) {
