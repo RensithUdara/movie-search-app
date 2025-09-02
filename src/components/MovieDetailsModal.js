@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaTimes, FaStar, FaCalendarAlt, FaFilm, FaClock, FaUsers, FaGlobe, FaTheaterMasks } from 'react-icons/fa';
+import { FaTimes, FaStar, FaCalendarAlt, FaFilm, FaClock, FaUsers, FaGlobe, FaTheaterMasks, FaImage } from 'react-icons/fa';
 import './MovieDetailsModal.css';
 
 function MovieDetailsModal({ imdbID, onClose }) {
@@ -48,6 +48,9 @@ function MovieDetailsModal({ imdbID, onClose }) {
 
   // Create array of genre tags
   const genres = movieDetails.Genre ? movieDetails.Genre.split(', ') : [];
+  
+  // State to track image loading errors
+  const [posterError, setPosterError] = useState(false);
 
   return (
     <div className="modal" onClick={onClose}>
@@ -58,10 +61,18 @@ function MovieDetailsModal({ imdbID, onClose }) {
         
         <div className="modal-content-wrapper">
           <div className="modal-poster">
-            <img 
-              src={movieDetails.Poster !== 'N/A' ? movieDetails.Poster : 'https://via.placeholder.com/300x450?text=No+Image+Available'} 
-              alt={movieDetails.Title} 
-            />
+            {!posterError && movieDetails.Poster && movieDetails.Poster !== 'N/A' ? (
+              <img 
+                src={movieDetails.Poster} 
+                alt={movieDetails.Title} 
+                onError={() => setPosterError(true)}
+              />
+            ) : (
+              <div className="poster-fallback">
+                <FaImage />
+                <p>{movieDetails.Title}</p>
+              </div>
+            )}
           </div>
           
           <div className="modal-info">
