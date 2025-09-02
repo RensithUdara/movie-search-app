@@ -28,16 +28,23 @@ function App() {
   useEffect(() => {
     document.body.className = darkMode ? 'dark-mode' : '';
   }, [darkMode]);
+  
+  // Effect to run search when page changes
+  useEffect(() => {
+    if (searchTerm.trim() !== '') {
+      handleSearch();
+    }
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = async () => {
     if (searchTerm.trim() === '') return;
     setLoading(true);
     try {
-      const response = await fetch(`http://www.omdbapi.com/?s=${searchTerm}&page=${page}&apikey=a2bc5221`);
+      const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&page=${page}&apikey=a2bc5221`);
       const data = await response.json();
       if (data.Search) {
         setMovies(data.Search);
-        setSearchHistory((prev) => [...new Set([searchTerm, ...prev])]);
+        setSearchHistory((prev) => [...new Set([searchTerm, ...prev.slice(0, 9)])]);
       } else {
         setMovies([]);
       }
