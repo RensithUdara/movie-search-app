@@ -2,7 +2,18 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from './components/MovieCard';
 import MovieDetailsModal from './components/MovieDetailsModal';
 import './App.css';
-import { FaSearch, FaSun, FaMoon, FaTimes } from 'react-icons/fa';
+import { 
+  FaSearch, 
+  FaSun, 
+  FaMoon, 
+  FaTimes, 
+  FaHeart, 
+  FaHistory, 
+  FaChevronLeft, 
+  FaChevronRight,
+  FaTrash,
+  FaFilm
+} from 'react-icons/fa';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,7 +75,7 @@ function App() {
   return (
     <div className="app-frame">
       <header className="app-header">
-        <h1>Movie Search App</h1>
+        <h1><FaFilm /> Movie Search App</h1>
         <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)}>
           {darkMode ? <FaSun /> : <FaMoon />} {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
@@ -75,6 +86,11 @@ function App() {
           placeholder="Search for a movie..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
         />
         {searchTerm && (
           <button className="clear-search" onClick={handleClearSearch}>
@@ -87,7 +103,7 @@ function App() {
       </div>
 
       {loading ? (
-        <div className="loading">Loading...</div>
+        <div className="loading">Loading movies...</div>
       ) : (
         <div className="movies-container">
           {movies.length > 0 ? (
@@ -100,25 +116,34 @@ function App() {
               />
             ))
           ) : (
-            <p>No movies found</p>
+            searchTerm.trim() !== '' ? (
+              <div className="no-results">
+                <p>No movies found matching "{searchTerm}"</p>
+                <p>Try a different search term</p>
+              </div>
+            ) : (
+              <div className="welcome-message">
+                <p>Search for movies above to get started!</p>
+              </div>
+            )
           )}
         </div>
       )}
 
       <div className="pagination">
         <button onClick={() => handlePagination('prev')} disabled={page === 1}>
-          Previous
+          <FaChevronLeft /> Previous
         </button>
         <span>Page {page}</span>
         <button onClick={() => handlePagination('next')}>
-          Next
+          Next <FaChevronRight />
         </button>
       </div>
 
       <section className="favorites-section">
-        <h2>Favorites</h2>
+        <h2><FaHeart /> Favorites</h2>
         <button className="clear-favorites" onClick={handleClearFavorites}>
-          Clear All Favorites
+          <FaTrash /> Clear All Favorites
         </button>
         <div className="favorites-container">
           {favorites.length > 0 ? (
@@ -126,24 +151,33 @@ function App() {
               <MovieCard
                 key={movie.imdbID}
                 movie={movie}
+                onSelect={() => setSelectedMovie(movie.imdbID)}
                 onRemoveFromFavorites={() => handleRemoveFromFavorites(movie.imdbID)}
                 isFavorite
               />
             ))
           ) : (
-            <p>No favorites added</p>
+            <p>No favorites added yet. Click "Add to Favorites" on any movie card to add it here.</p>
           )}
         </div>
       </section>
 
       <section className="history-section">
-        <h2>Search History</h2>
+        <h2><FaHistory /> Search History</h2>
         <div className="search-history">
-          {searchHistory.map((term, index) => (
-            <button key={index} onClick={() => setSearchTerm(term)}>
-              {term}
-            </button>
-          ))}
+          {searchHistory.length > 0 ? (
+            searchHistory.map((term, index) => (
+              <button key={index} onClick={() => {
+                setSearchTerm(term);
+                // Need to use a timeout to ensure setSearchTerm completes first
+                setTimeout(() => handleSearch(), 0);
+              }}>
+                {term}
+              </button>
+            ))
+          ) : (
+            <p>Search for movies to build your history.</p>
+          )}
         </div>
       </section>
 
