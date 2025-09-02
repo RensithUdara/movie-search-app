@@ -198,6 +198,7 @@ h1 {
   position: relative;
   max-width: 800px;
   gap: 12px;
+  flex: 0 0 auto;
 }
 
 .search-input-wrapper {
