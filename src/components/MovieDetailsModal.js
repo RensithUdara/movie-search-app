@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FaTimes, FaStar, FaCalendarAlt, FaFilm, FaClock, FaUsers, FaGlobe, FaTheaterMasks, FaImage } from 'react-icons/fa';
+import { FaTimes, FaStar, FaCalendarAlt, FaClock, FaUsers, FaGlobe, FaTheaterMasks, FaImage } from 'react-icons/fa';
 import './MovieDetailsModal.css';
 
 function MovieDetailsModal({ imdbID, onClose }) {
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [posterError, setPosterError] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -48,9 +49,6 @@ function MovieDetailsModal({ imdbID, onClose }) {
 
   // Create array of genre tags
   const genres = movieDetails.Genre ? movieDetails.Genre.split(', ') : [];
-  
-  // State to track image loading errors
-  const [posterError, setPosterError] = useState(false);
 
   return (
     <div className="modal" onClick={onClose}>
