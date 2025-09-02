@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart, FaCalendarAlt, FaFilm, FaInfoCircle, FaImage } from 'react-icons/fa';
 import './MovieCard.css';
 
 function MovieCard({ movie, onSelect, onAddToFavorites, onRemoveFromFavorites, isFavorite }) {
   const [imageError, setImageError] = useState(false);
+  const [isValidating, setIsValidating] = useState(true);
+  
+  // Validate image on component mount
+  useEffect(() => {
+    const validateImage = async () => {
+      if (!movie.Poster || movie.Poster === 'N/A') {
+        setImageError(true);
+        setIsValidating(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(movie.Poster, { method: 'HEAD' });
+        if (!response.ok) {
+          setImageError(true);
+          console.log(`Invalid poster image for ${movie.Title}: ${movie.Poster}`);
+        }
+      } catch (error) {
+        console.error(`Error validating image for ${movie.Title}:`, error);
+        setImageError(true);
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateImage();
+  }, [movie.Poster, movie.Title]);
 
   // Handle image load errors
   const handleImageError = () => {
+    console.log(`Failed to load image: ${movie.Poster}`);
     setImageError(true);
   };
 
@@ -18,6 +46,8 @@ function MovieCard({ movie, onSelect, onAddToFavorites, onRemoveFromFavorites, i
             src={movie.Poster} 
             alt={movie.Title}
             onError={handleImageError}
+            loading="eager"
+            crossOrigin="anonymous"
           />
         ) : (
           <div className="fallback-poster">
